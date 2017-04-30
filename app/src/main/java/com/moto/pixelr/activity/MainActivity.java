@@ -47,7 +47,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
-import com.huhx0015.hxgselib.audio.HXGSEMusicEngine;
+
+import com.huhx0015.hxaudio.audio.HXMusic;
 import com.moto.pixelr.constants.Constants;
 import com.moto.pixelr.R;
 import com.moto.pixelr.data.Global;
@@ -220,21 +221,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @OnClick(R.id.pixel_music_1_container)
     public void playMusic1() {
         currentSong = "AllOfTheLights";
-        HXGSEMusicEngine.getInstance().playSongName(currentSong, true, this);
+        HXMusic.music()
+                .load(R.raw.all_of_the_lights)
+                .looped(true)
+                .play(this);
         isPlaying = true;
     }
 
     @OnClick(R.id.pixel_music_2_container)
     public void playMusic2() {
         currentSong = "SONG 1";
-        HXGSEMusicEngine.getInstance().playSongName(currentSong, true, this);
+        HXMusic.music()
+                .load(R.raw.song_1_gamerstep_bass_triplets)
+                .looped(true)
+                .play(this);
         isPlaying = true;
     }
 
     @OnClick(R.id.pixel_music_3_container)
     public void playMusic3() {
         currentSong = "SONG 2";
-        HXGSEMusicEngine.getInstance().playSongName(currentSong, true, this);
+        HXMusic.music()
+                .load(R.raw.song_2_ts_drums)
+                .looped(true)
+                .play(this);
         isPlaying = true;
     }
 
@@ -320,9 +330,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Getting the sensor service.
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        // AUDIO CLASS INITIALIZATION:
-        HXGSEMusicEngine.getInstance().initializeAudio(); // Initializes the HXGSEMusic class object.
-
         initDisplay();
         initView();
         initService();
@@ -362,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // Resumes audio playback if music was playing in the background.
         if (isPlaying) {
-            HXGSEMusicEngine.getInstance().playSongName(currentSong, true, this);
+            HXMusic.resume(this);
         }
     }
 
@@ -370,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
 
-        HXGSEMusicEngine.getInstance().pauseSong(); // Pauses any song that is playing in the background.
+        HXMusic.pause(); // Pauses any song that is playing in the background.
 
         // release the camera immediately on pause event
         releaseCamera();
@@ -389,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         releaseVisualizer();
 
         // Releases all audio-related instances if the application is terminating.
-        HXGSEMusicEngine.getInstance().releaseMedia();
+        HXMusic.clear();
     }
 
     /**
@@ -822,8 +829,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         // Stops the song that is currently playing in the background.
-        if (HXGSEMusicEngine.getInstance().isSongPlaying()) {
-            HXGSEMusicEngine.getInstance().stopSong();
+        if (HXMusic.isPlaying()) {
+            HXMusic.stop();
             currentSong = "NONE"; // Indicates no song has been selected.
         }
     }
